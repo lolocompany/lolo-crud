@@ -4,6 +4,8 @@ async function checkOutboundRefs(ev, ctx) {
   for (const ref of crud.getRefs('out')) {
     const ids = [].concat(item[ref.fk]);
 
+    if (!ref.crud) return; // account
+
     const { body } = await ref.crud.request('list', {
       session,
       query: {

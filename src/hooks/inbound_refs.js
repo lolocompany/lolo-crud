@@ -4,10 +4,12 @@ async function checkInboundRefs(ev, ctx) {
   const { item, crud } = ev;
 
   for (const ref of crud.getRefs('in')) {
+    if (!ref.crud) return; // account
+
     const refIds = await findIds(ref.crud.collection, { [ref.fk]: item.id });
 
     if (refIds.length) {
-      await handleDeleteStrategy(crud, ref, refIds);
+      await handleDeleteStrategy(crud, ref, refIds, ctx);
     }
   }
 }
@@ -17,12 +19,12 @@ const findIds = async(collection, filter) => {
   return items.map(item => item.id);
 };
 
-const handleDeleteStrategy = (crud, ref, refIds) => {
+const handleDeleteStrategy = (crud, ref, refIds, ctx) => {
   const strategy = ref.refCheck.delete;
 
   switch (strategy) {
     case 'reject':
-      this.fail(buildErrorMsg(crud, ref, refIds));
+      ctx.fail(buildErrorMsg(crud, ref, refIds));
       break;
 
     case 'orphan':
@@ -46,11 +48,18 @@ const handleOrphan = async(crud, ref, refIds) => {
 };
 */
 
-const buildErrorMsg = (crud, ref, refIds) => {
+const buildErrorMsg = (crud, ref, [ firstId, ...restIds ]) => {
   let msg = `${crud.resourceName} is referenced by `;
-  msg += pluralize(ref.resourceName, refIds.length, true);
-  msg += ' and cannot be deleted';
 
+  if (restIds.length) {
+    msg += `${firstId} and ${restIds.length} `;
+    msg += `more ${pluralize(ref.resourceName, restIds.length)} `;
+
+  } else {
+    msg += `${ref.resourceName} ${firstId} `;
+  }
+
+  msg += 'and cannot be deleted';
   return msg;
 };
 

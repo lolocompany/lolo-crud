@@ -5,7 +5,6 @@ function getRefs(direction) {
   const { resourceName, constructor } = this;
 
   const map = lodash.get(constructor.dependencyMap, [ direction, resourceName  ], {});
-  this.log.info('getRefs', direction, resourceName, map);
 
   return Object.entries(map).reduce((memo, [ resourceName, ref ]) => {
     return memo.concat({ resourceName, ...ref });
@@ -54,7 +53,7 @@ function buildDependencyMap() {
         [foreignResourceName]: {
           refCheck,
           fk: this.key,
-          crud
+          crud: byResourceName[foreignResourceName]
         }
       };
     });
@@ -64,7 +63,7 @@ function buildDependencyMap() {
 const getRefCheck = (ctx, resourceName) => {
   const refCheck = {
     ...ctx.node.refCheck,
-    set: true,
+    set: 'reject',
     delete: 'reject'
   };
 
