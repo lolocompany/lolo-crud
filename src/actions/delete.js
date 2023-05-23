@@ -1,10 +1,9 @@
 async function _delete(ev, ctx) {
   const { item } = ev;
 
-  await this.preHook('save');
-  await this.collection.deleteOne(item);
-
-  await this.preHook('response');
+  await this.withHooks('save', async() => {
+    await this.collection.deleteOne(item);
+  });
 
   return {
     status: 204

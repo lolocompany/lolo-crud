@@ -14,13 +14,13 @@ async function update(ev, ctx) {
     }
   );
 
-  await this.preHook('validate');
-  await this.validate(ev.item);
+  await this.withHooks('validate', async() => {
+    await this.validate(ev.item);
+  });
 
-  await this.preHook('save');
-  await this.collection.updateOne(item);
-
-  await this.preHook('response');
+  await this.withHooks('save', async() => {
+    await this.collection.updateOne(item);
+  });
 
   return {
     body: item

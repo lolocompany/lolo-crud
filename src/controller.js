@@ -5,9 +5,10 @@ const hooks = require('./hooks');
 class CrudController {
   constructor(crud) {
     this.crud = crud;
-
     this.validate = buildValidate(crud.schema);
-    this.preHooks = new hooks.Registry();
+
+    this.preHooks  = new hooks.Registry();
+    this.postHooks = new hooks.Registry();
 
     this.collection = null;
     this.auth = null;
@@ -35,11 +36,19 @@ class CrudController {
 
     const actionCtx = {
       ...this,
-      preHook: stage => this.preHooks.run(stage, action, ev, ctx)
+      withHooks: async(stage, cb) => {
+        await this.preHooks.run(stage, action, ev, ctx);
+        const res = await cb();
+        await this.postHooks.run(stage, action, ev, ctx);
+        return res;
+      }
     };
 
     await this.preAction(actionCtx, ev, ctx);
-    return actions[action].call(actionCtx, ev, ctx);
+    const res = await actions[action].call(actionCtx, ev, ctx);
+
+    await actionCtx.withHooks('response', () => {});
+    return res;
   }
 
   async preAction(actionCtx, ev, ctx) {
@@ -47,18 +56,19 @@ class CrudController {
     const { params } = ev;
 
     if (!ev.session) {
-      await actionCtx.preHook('auth');
-      ev.session = await auth.getSession(ev.headers);
+      await actionCtx.withHooks('auth', async() => {
+        ev.session = await auth.getSession(ev.headers);
+      });
     }
 
     ev.accountFilter = { accountId: ev.session.accountId };
 
     if (params.id) {
-      await actionCtx.preHook('load');
-
-      ev.item = await collection.findOne({
-        id: params.id,
-        ...ev.accountFilter
+      await actionCtx.withHooks('load', async() => {
+        ev.item = await collection.findOne({
+          id: params.id,
+          ...ev.accountFilter
+        });
       });
 
       if (!ev.item) ctx.fail('not found', 404);

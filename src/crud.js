@@ -33,6 +33,10 @@ class Crud {
     return this.controller.preHooks.add(...args);
   }
 
+  postHook(...args) {
+    return this.controller.postHooks.add(...args);
+  }
+
   request(action, ev, ctx) {
     return this.controller.run(action, ev, ctx);
   }

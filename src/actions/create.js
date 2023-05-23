@@ -14,13 +14,13 @@ async function create(ev, ctx) {
     updatedBy: session.email
   };
 
-  await this.preHook('validate');
-  await this.validate(ev.item);
+  await this.withHooks('validate', async() => {
+    await this.validate(ev.item);
+  });
 
-  await this.preHook('save');
-  await this.collection.insertOne(ev.item);
-
-  await this.preHook('response');
+  await this.withHooks('save', async() => {
+    await this.collection.insertOne(ev.item);
+  });
 
   return {
     body: ev.item,
