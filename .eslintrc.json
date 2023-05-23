@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "nodejs"
+  ],
+  "env": {
+    "node": true,
+    "es6": true,
+    "mocha": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "es7ClassProperties": true
+     }
+  },
+  "globals": {},
+  "rules": {
+    "comma-dangle": 0,
+    "padded-blocks": 0,
+    "arrow-body-style": 0,
+    "no-template-curly-in-string": 0,
+    "no-confusing-arrow": 0,
+    "no-multi-spaces": 0
+  }
+}
