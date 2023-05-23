@@ -2,28 +2,26 @@ const lodash = require('lodash');
 const { crudFields } = require('../schema');
 
 async function update(ev, ctx) {
-  const { body, session, item } = ev;
+  const { body, session } = ev;
 
-  Object.assign(
-    item,
-    lodash.omit(body, crudFields),
-    {
-      version: (item.version || 0) + 1,
-      updatedAt: new Date().toISOString(),
-      updatedBy: session.email,
-    }
-  );
+  ev.item = {
+    ...lodash.omit(body, crudFields),
+    ...lodash.pick(ev.item, crudFields),
+    version: (ev.item.version || 0) + 1,
+    updatedAt: new Date().toISOString(),
+    updatedBy: session.email
+  };
 
   await this.withHooks('validate', async() => {
     await this.validate(ev.item);
   });
 
   await this.withHooks('save', async() => {
-    await this.collection.updateOne(item);
+    await this.collection.updateOne(ev.item);
   });
 
   return {
-    body: item
+    body: ev.item
   };
 }
 
