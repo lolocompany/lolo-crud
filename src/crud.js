@@ -2,12 +2,12 @@ const pluralize = require('pluralize');
 
 const { withCrudProps } = require('./schema');
 const Controller = require('./controller');
-const refs = require('./refs');
 
 class Crud {
-  constructor(params, log) {
+  constructor(params, log, registry) {
     this.params = params;
     this.log = log;
+    this.registry = registry;
 
     this.resourceName = params.resourceName;
     this.resourceNamePlural = pluralize(this.resourceName);
@@ -22,11 +22,7 @@ class Crud {
 
     this.collection = ctx[collectionHelper](resourceName, ctx);
     this.controller.init(ctx);
-
-    if (!this.constructor.dependencyMap) {
-      this.constructor.buildDependencyMap();
-      this.log.info('dependencyMap', this.constructor.dependencyMap);
-    }
+    this.registry.buildDependencyMap();
   }
 
   preHook(...args) {
@@ -40,8 +36,17 @@ class Crud {
   request(action, ev, ctx) {
     return this.controller.run(action, ev, ctx);
   }
-}
 
-refs.mixin(Crud);
+  getRefs(direction) {
+    const { registry: { dependencyMap }, resourceName } = this;
+
+    const obj = dependencyMap[direction][resourceName] || {};
+
+    return Object.entries(obj).map(([ resourceName, ref ]) => ({
+      resourceName,
+      ...ref
+    }));
+  }
+}
 
 module.exports = Crud;

@@ -1,44 +1,41 @@
 const Crud = require('./crud');
+const CrudRegistry = require('./registry');
 
 const { Collection, StateCollection } = require('./collection');
 const { Auth, LoloAuth } = require('./auth');
 
-Crud.byResourceName = {};
+const getInstance = () => {
+  const registry = new CrudRegistry();
 
-/*
- *
- */
+  const addResource = bCtx => {
+    const { params, addHelper, log } = bCtx;
 
-const addResource = bCtx => {
-  const { params, addHelper, log } = bCtx;
-  const { resourceName } = params;
+    const crud = new Crud(params, log, registry);
+    registry.addCrud(crud);
 
-  log.info('addResource', params.resourceName);
+    addHelper('getCrud', ctx => (resourceName = ctx.params.resourceName) => {
+      return registry.getCrud(resourceName);
+    });
 
-  if (Crud.byResourceName[resourceName]) {
-    throw new Error('crud for ' + resourceName + ' already exists');
-  }
+    addHelper('crud-collection-default', ctx => resourceName => {
+      return new StateCollection(resourceName, ctx);
+    });
 
-  addHelper('getCrud', ctx => (resourceName = ctx.params.resourceName) => {
-    const crud = Crud.byResourceName[resourceName];
-    if (crud) return crud;
+    addHelper('crud-auth-default', ctx => () => {
+      return new LoloAuth(ctx);
+    });
+  };
 
-    throw new Error('crud ' + resourceName + ' not found');
-  });
-
-  addHelper('crud-collection-default', ctx => resourceName => {
-    return new StateCollection(resourceName, ctx);
-  });
-
-  addHelper('crud-auth-default', ctx => () => {
-    return new LoloAuth(ctx);
-  });
-
-  Crud.byResourceName[resourceName] = new Crud(params, log);
+  return {
+    addResource
+  };
 };
 
+const singleton = getInstance();
+
 module.exports = {
-  addResource,
+  addResource: singleton.addResource,
+  getInstance,
   Collection,
   Auth
 };
