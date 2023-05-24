@@ -1,119 +1,89 @@
 const assert = require('chai').assert;
-const engineMock = require('./engine_mock');
-const crudLib = require('../src');
+const { initHelper, params, assertItemResponse } = require('./helpers');
 
-const resourceName = 'post';
-
-const schema = {
-  type: 'object',
-  properties: {
-    title: { type: 'string' }
-  },
-  required: [ 'title' ]
-};
-
-const { bCtx, ctx, headers } = engineMock(resourceName, schema, { log: false });
-crudLib.addResource(bCtx);
-
-describe('initialization', () => {
-  let crud;
-
-  it('getCrud returns a crud api', async() => {
-    crud = ctx.getCrud(resourceName);
-    assert.isObject(crud);
-    assert.strictEqual(crud.resourceName, resourceName);
-  });
-
-  it('crud.init initializes the crud api', async() => {
-    crud.init(ctx);
-    assert.isObject(crud.collection);
-  });
-});
+const body = { title: 'Pig Tatoos' };
 
 describe('crud', () => {
-  let crud;
-
   beforeEach(() => {
-    crud = ctx.getCrud(resourceName);
-    crud.init(ctx);
+    const h = initHelper({ log: true });
+    this.crud = h.addResource(params.post);
+    this.assertItemResponse = assertItemResponse.bind(this);
+    this.create = () => this.crud.request('create', { body });
   });
+
+  /*
+   * Create
+   */
 
   it('create', async() => {
-    const ev = { headers, body: { title: 'Pig tatoos' }};
-    const { status, body } = await crud.request('create', ev, ctx);
-
-    assert.strictEqual(status, 202);
-    assert.isObject(body);
+    const cRes = await this.create();
+    await this.assertItemResponse(cRes, body, 202);
   });
 
-  it('creates with id', async() => {
-    const id = 'my-id';
-    const ev = { headers, body: { id, title: 'Pig tatoos' }};
-    const { status, body } = await crud.request('create', ev, ctx);
-
-    assert.strictEqual(status, 202);
-    assert.isObject(body);
-    assert.strictEqual(body.id, id);
-  });
-});
-
-describe('crud', () => {
-  let crud;
-  let item;
-
-  beforeEach(async() => {
-    crud = ctx.getCrud(resourceName);
-    crud.init(ctx);
-
-    const ev = { headers, body: { title: 'Pig tatoos' }};
-    const { body } = await crud.request('create', ev, ctx);
-    item = body;
-  });
+  /*
+   * Read
+   */
 
   it('read', async() => {
-    const ev = { headers, params: { id: item.id }};
-    const { status, body } = await crud.request('read', ev, ctx);
-
-    assert.strictEqual(status, 200);
-    assert.isObject(body);
+    const cRes = await this.create();
+    const rRes = await this.crud.request('read', {
+      params: { id: cRes.body.id }}
+    );
+    await this.assertItemResponse(rRes, cRes.body, 200);
   });
+
+  /*
+   * Update
+   */
 
   it('update', async() => {
-    const newTitle = 'updated';
+    const cRes = await this.create();
+    const uBody = { ...cRes.body, title: 'changed' };
+    const uRes = await this.crud.request('update', {
+      params: { id: cRes.body.id },
+      body: uBody
+    });
+    await this.assertItemResponse(uRes, uBody, 200);
+  });
 
-    const ev = { headers, params: { id: item.id }, body: { ...item, title: newTitle }};
-    const { status, body } = await crud.request('update', ev, ctx);
+  /*
+   * Delete
+   */
 
-    assert.strictEqual(status, 200);
-    assert.strictEqual(body.title, newTitle);
+  it('delete', async() => {
+    const cRes = await this.create();
+    const dRes = await this.crud.request('delete', {
+      params: { id: cRes.body.id }}
+    );
+    assert.strictEqual(dRes.status, 204);
+    assert.isUndefined(dRes.body);
+  });
+
+  /*
+   * List
+   */
+
+  it('list', async() => {
+    const cRes = await this.create();
+    const lRes = await this.crud.request('list', { query: {}});
+    const items = lRes.body[this.crud.resourceNamePlural];
+    assert.strictEqual(lRes.status, 200);
+    assert.isArray(items);
+    assert.lengthOf(items, 1);
+    assert.deepStrictEqual(cRes.body, items[0]);
+  });
+
+  /*
+   * Patch
+   */
+
+  it('patch', async() => {
+    const res = await this.crud.request('create', { body });
+    const pBody = { title: 'changed' };
+    const pRes = await this.crud.request('update', {
+      params: { id: res.body.id },
+      body: pBody }
+    );
+    await this.assertItemResponse(pRes, pBody, 200);
   });
 });
-
-
-/*
-  it('read returns the item', async() => {
-    const ev = { headers, params: { id: item.id }};
-    const { status, body } = await crud.request('read', ev, ctx);
-
-    assert.strictEqual(status, 200);
-    assert.isObject(body);
-    assert.deepStrictEqual(body, item);
-  });
-
-  it('updates the item', async() => {
-    const title = 'updated';
-    const ev = { headers, params: { id: item.id }, body: { ...item, title }};
-    const { status, body } = await crud.request('update', ev, ctx);
-
-    assert.strictEqual(status, 200);
-    assert.isObject(body);
-    assert.strictEqual(body.title, title);
-  });
-
-  after(() => {
-    console.log('\nstate:');
-    console.log(ctx.state.db);
-  });
-});
-
-*/

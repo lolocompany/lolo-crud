@@ -19,6 +19,7 @@ class CrudController {
   init(ctx) {
     const { authHelper } = ctx.params;
 
+    this.ctx = ctx;
     this.auth = ctx[authHelper](ctx);
     this.collection = this.crud.collection;
   }
@@ -31,7 +32,7 @@ class CrudController {
     }
   }
 
-  async run(action, ev, ctx) {
+  async run(action, ev, ctx = this.ctx) {
     this.prepareEvent(ev);
 
     const actionCtx = {
