@@ -23,6 +23,7 @@ async function patch(ev, ctx) {
   });
 
   return {
+    status: 200,
     body: item
   };
 }

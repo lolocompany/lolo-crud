@@ -13,6 +13,7 @@ async function list(ev, ctx) {
   });
 
   return {
+    status: 200,
     body: {
       [resourceNamePlural]: ev.items,
       count: ev.items.length,

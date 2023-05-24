@@ -21,6 +21,7 @@ async function update(ev, ctx) {
   });
 
   return {
+    status: 200,
     body: ev.item
   };
 }
