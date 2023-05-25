@@ -8,20 +8,24 @@ class StateCollection extends Collection {
   }
 
   async insertOne(item) {
+    super.insertOne(item);
     return this.updateOne(item);
   }
 
   async updateOne(item) {
+    super.updateOne(item);
     const key = this.buildKey(item);
     return this.state.set(key, item);
   }
 
   async deleteOne(item) {
+    super.deleteOne(item);
     const key = this.buildKey(item);
     return this.state.set(key, null);
   }
 
   async findOne(filter) {
+    super.findOne(filter);
     if (filter.id && filter.accountId) {
       // avoid scan if we're able to build a key
       const item = this.state.get(this.buildKey(filter));
@@ -33,6 +37,7 @@ class StateCollection extends Collection {
   }
 
   async find(filter) {
+    super.find(filter);
     const re = new RegExp(`^${this.name}:`);
 
     return this.state.keys(re).reduce(
@@ -46,6 +51,7 @@ class StateCollection extends Collection {
   }
 
   async findByQueryString(query, baseFilter) {
+    super.findByQueryString(query, baseFilter);
     const items = await this.find(baseFilter);
     return findByQueryString(items, query);
   }
