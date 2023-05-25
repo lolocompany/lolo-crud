@@ -1,9 +1,7 @@
 const lodash = require('lodash');
 
 const findByQueryString = (items, query) => {
-  const { q = {}, offset = 0, limit = 10, pick, sort = 'createdAt asc' } = query;
-  const { qor = false, qci = false, qre = false } = query;
-
+  const { q, offset, limit, pick, sort, qor, qci, qre } = query;
   const fn = JSON.parse(qor) ? 'some' : 'every';
 
   Object.keys(q).forEach(key => {
