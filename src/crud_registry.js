@@ -36,7 +36,7 @@ class CrudRegistry {
    */
 
   buildDependencyMap(log) {
-    if (false && this.dependencyMap) {
+    if (this.dependencyMap) {
       return;
 
     } else {
@@ -74,7 +74,7 @@ class CrudRegistry {
         });
       });
     }
-    log.info('dependencyMap', JSON.stringify(this.dependencyMap, null, 2));
+    logDependencyMap(this.dependencyMap, log);
   }
 }
 
@@ -107,4 +107,34 @@ const getRefCheck = (ctx, resourceName) => {
   return refCheck;
 };
 
+function logDependencyMap(map, log) {
+  let res = '';
+
+  for (const direction in map) {
+    res += '\n' + direction + ':\n' + Array(46).fill('-').join('') + '\n';
+
+    const entries = Object.entries(map[direction]).sort((a, b) => {
+      if (a[0] < b[0]) {
+        return -1;
+      }
+      if (a[0] > b[0]) {
+        return 1;
+      }
+      return 0;
+    });
+
+    for (const [ name, arr ] of entries) {
+      for (const ref of arr) {
+        res += (
+          name.padEnd(20) +
+          ref.resourceName.padEnd(20) +
+          ref.refCheck[(direction === 'inbound' ? 'delete' : 'set')] +
+          '\n'
+        );
+      }
+    }
+  }
+
+  log(res);
+}
 module.exports = CrudRegistry;
