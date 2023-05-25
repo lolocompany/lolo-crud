@@ -8,7 +8,7 @@ async function checkInboundRefs(ev, ctx) {
 
     const refIds = await findIds(ref.crud.collection, { [ref.fk]: item.id });
 
-    if (refIds.length) {
+    if (refIds.length && ref.refCheck.delete !== 'allow') {
       await handleDeleteStrategy(crud, ref, refIds, ctx);
     }
   }
@@ -37,7 +37,7 @@ const handleDeleteStrategy = async(crud, ref, refIds, ctx) => {
       break;
 
     default:
-      break;
+      throw new Error('invalid refCheck.delete ' + strategy);
   }
 };
 

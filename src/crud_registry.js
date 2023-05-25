@@ -73,12 +73,23 @@ class CrudRegistry {
   }
 }
 
+const setStrategies = [ 'reject', 'allow' ];
+const deleteStrategies = [ 'reject', 'orphan', 'cascade', 'allow' ];
+
 const getRefCheck = (ctx, resourceName) => {
   const refCheck = {
     set: 'reject',
     delete: 'reject',
     ...ctx.node.refCheck
   };
+
+  if (!setStrategies.includes(refCheck.set)) {
+    throw new Error('unsupported refCheck.set ' + refCheck.set);
+  }
+
+  if (!deleteStrategies.includes(refCheck.delete)) {
+    throw new Error('unsupported refCheck.delete ' + refCheck.delete);
+  }
 
   if (refCheck.delete === 'orphan') {
     const required = ctx.parent.parent.node.required || [];
