@@ -1,3 +1,7 @@
+/*
+ * Base class for Auth providers
+ */
+
 class Auth {
   constructor(ctx) {
   }

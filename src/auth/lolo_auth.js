@@ -5,10 +5,6 @@ const Auth = require('./auth');
 const cache = {};
 const cacheTTL = 5 * 60 * 1000;
 
-/*
- * Base class for Auth providers
- */
-
 class LoloAuth extends Auth {
   constructor(ctx) {
     super(ctx);
