@@ -53,6 +53,10 @@ class CrudRegistry {
         const foreignResourceName = match[1];
         const refCheck = getRefCheck(this, resourceName);
 
+        if (!byResourceName[foreignResourceName]) {
+          return; // not a crud resource
+        }
+
         inbound[foreignResourceName] = inbound[foreignResourceName] || [];
         inbound[foreignResourceName].push({
           resourceName,
@@ -70,6 +74,7 @@ class CrudRegistry {
         });
       });
     }
+    log.info('dependencyMap', JSON.stringify(this.dependencyMap, null, 2));
   }
 }
 

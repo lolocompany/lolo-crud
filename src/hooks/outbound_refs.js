@@ -4,7 +4,7 @@ async function checkOutboundRefs(ev, ctx) {
   for (const ref of crud.getRefs('outbound')) {
     const ids = [].concat(item[ref.fk]);
 
-    if (!ref.crud || ref.refCheck.allow === 'allow') return;
+    if (ref.refCheck.allow === 'allow') return;
 
     const { body } = await ref.crud.request('list', {
       session,

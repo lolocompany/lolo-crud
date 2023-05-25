@@ -4,8 +4,6 @@ async function checkInboundRefs(ev, ctx) {
   const { item, crud } = ev;
 
   for (const ref of crud.getRefs('inbound')) {
-    if (!ref.crud) return; // account
-
     const refIds = await findIds(ref.crud.collection, { [ref.fk]: item.id });
 
     if (refIds.length && ref.refCheck.delete !== 'allow') {

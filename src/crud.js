@@ -43,7 +43,7 @@ class Crud {
   }
 
   toJSON() {
-    return {};
+    return {}; // cyclic references
   }
 }
 
