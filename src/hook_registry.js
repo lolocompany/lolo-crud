@@ -32,4 +32,7 @@ class HookRegistry {
 
 const buildKey = (stage, action) => [ stage, action ].join(':');
 
+HookRegistry.actions = actions;
+HookRegistry.stages = stages;
+
 module.exports = HookRegistry;

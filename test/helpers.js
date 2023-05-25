@@ -45,9 +45,10 @@ const params = {
       type: 'object',
       properties: {
         title: { type: 'string' },
-        body:  { type: 'string' }
+        content:  { type: 'string' },
+        authorId: { type: 'string' }
       },
-      required: [ 'title' ]
+      required: [ 'title', 'authorId' ]
     }
   },
   comment: {
@@ -56,8 +57,9 @@ const params = {
       type: 'object',
       properties: {
         body: { type: 'string' },
+        postId: { type: 'string' }
       },
-      required: [ 'body' ]
+      required: [ 'body', 'postId' ]
     }
   },
 };
@@ -94,6 +96,8 @@ const initHelper = (opts = {}) => {
     return new AuthMock(ctx);
   });
 
+  const instance = crudLib.getInstance();
+
   return {
     addResource: params => {
       params = {
@@ -102,7 +106,7 @@ const initHelper = (opts = {}) => {
         authHelper: 'crud-auth-mock',
       };
 
-      crudLib.getInstance().addResource({ ...setupContext, params });
+      instance.addResource({ ...setupContext, params });
 
       const crud = handlerContext.getCrud(params.resourceName);
       crud.init({ ...handlerContext, params });
@@ -112,18 +116,19 @@ const initHelper = (opts = {}) => {
   };
 };
 
-async function assertItemResponse(res, body = {}, status = 200) {
+async function assertItemResponse(crud, res, body = {}, status = 200) {
   const { version, updatedAt, ...compareBody } = body; // eslint-disable-line
   assert.strictEqual(res.status, status);
   assert.isObject(res.body);
   assert.include(res.body, compareBody);
 
-  const readRes = await this.crud.request('read', { params: { id: res.body.id }});
+  const readRes = await crud.request('read', { params: { id: res.body.id }});
   assert.deepStrictEqual(res.body, readRes.body);
 }
 
 module.exports = {
   initHelper,
   params,
-  assertItemResponse
+  assertItemResponse,
+  deepClone: obj => JSON.parse(JSON.stringify(obj))
 };

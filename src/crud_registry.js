@@ -35,8 +35,8 @@ class CrudRegistry {
    }
    */
 
-  buildDependencyMap() {
-    if (this.dependencyMap) {
+  buildDependencyMap(log) {
+    if (false && this.dependencyMap) {
       return;
 
     } else {

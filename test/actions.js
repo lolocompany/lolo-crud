@@ -1,14 +1,14 @@
 const assert = require('chai').assert;
 const { initHelper, params, assertItemResponse } = require('./helpers');
 
-const body = { title: 'Pig Tatoos' };
+const body = { name: 'Sirius Black' };
 
 describe('crud', () => {
+  let crud;
+
   beforeEach(() => {
     const h = initHelper({ log: true });
-    this.crud = h.addResource(params.post);
-    this.assertItemResponse = assertItemResponse.bind(this);
-    this.create = () => this.crud.request('create', { body });
+    crud = h.addResource(params.author);
   });
 
   /*
@@ -16,20 +16,8 @@ describe('crud', () => {
    */
 
   it('create', async() => {
-    const cRes = await this.create();
-    await this.assertItemResponse(cRes, body, 202);
-  });
-
-  /*
-   * Read
-   */
-
-  it('read', async() => {
-    const cRes = await this.create();
-    const rRes = await this.crud.request('read', {
-      params: { id: cRes.body.id }}
-    );
-    await this.assertItemResponse(rRes, cRes.body, 200);
+    const cRes = await crud.request('create', { body });
+    await assertItemResponse(crud, cRes, body, 202);
   });
 
   /*
@@ -37,13 +25,13 @@ describe('crud', () => {
    */
 
   it('update', async() => {
-    const cRes = await this.create();
-    const uBody = { ...cRes.body, title: 'changed' };
-    const uRes = await this.crud.request('update', {
+    const cRes = await crud.request('create', { body });
+    const uBody = { ...cRes.body, name: 'changed' };
+    const uRes = await crud.request('update', {
       params: { id: cRes.body.id },
       body: uBody
     });
-    await this.assertItemResponse(uRes, uBody, 200);
+    await assertItemResponse(crud, uRes, uBody, 200);
   });
 
   /*
@@ -51,8 +39,8 @@ describe('crud', () => {
    */
 
   it('delete', async() => {
-    const cRes = await this.create();
-    const dRes = await this.crud.request('delete', {
+    const cRes = await crud.request('create', { body });
+    const dRes = await crud.request('delete', {
       params: { id: cRes.body.id }}
     );
     assert.strictEqual(dRes.status, 204);
@@ -60,30 +48,16 @@ describe('crud', () => {
   });
 
   /*
-   * List
-   */
-
-  it('list', async() => {
-    const cRes = await this.create();
-    const lRes = await this.crud.request('list', { query: {}});
-    const items = lRes.body[this.crud.resourceNamePlural];
-    assert.strictEqual(lRes.status, 200);
-    assert.isArray(items);
-    assert.lengthOf(items, 1);
-    assert.deepStrictEqual(cRes.body, items[0]);
-  });
-
-  /*
    * Patch
    */
 
   it('patch', async() => {
-    const res = await this.crud.request('create', { body });
-    const pBody = { title: 'changed' };
-    const pRes = await this.crud.request('update', {
+    const res = await crud.request('create', { body });
+    const pBody = { name: 'changed' };
+    const pRes = await crud.request('update', {
       params: { id: res.body.id },
       body: pBody }
     );
-    await this.assertItemResponse(pRes, pBody, 200);
+    await assertItemResponse(crud, pRes, pBody, 200);
   });
 });

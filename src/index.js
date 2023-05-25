@@ -1,5 +1,5 @@
 const Crud = require('./crud');
-const CrudRegistry = require('./registry');
+const CrudRegistry = require('./crud_registry');
 
 const { Collection, StateCollection } = require('./collection');
 const { Auth, LoloAuth } = require('./auth');

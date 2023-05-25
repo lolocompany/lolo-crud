@@ -20,7 +20,7 @@ async function checkOutboundRefs(ev, ctx) {
       const item = items.find(item => item.id === id);
       if (item) continue;
 
-      ctx.fail(`${ref.resourceName} with id ${id} does not exist`);
+      ctx.fail(`${ref.resourceName} with id ${id} does not exist`, 422);
     }
   }
 }

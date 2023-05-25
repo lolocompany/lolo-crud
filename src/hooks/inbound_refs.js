@@ -24,7 +24,7 @@ const handleDeleteStrategy = (crud, ref, refIds, ctx) => {
 
   switch (strategy) {
     case 'reject':
-      ctx.fail(buildErrorMsg(crud, ref, refIds));
+      ctx.fail(buildErrorMsg(crud, ref, refIds), 422);
       break;
 
     case 'orphan':

@@ -22,7 +22,7 @@ class Crud {
 
     this.collection = ctx[collectionHelper](resourceName, ctx);
     this.controller.init(ctx);
-    this.registry.buildDependencyMap();
+    this.registry.buildDependencyMap(this.log);
   }
 
   preHook(...args) {
@@ -43,8 +43,8 @@ class Crud {
     const obj = dependencyMap[direction][resourceName] || {};
 
     return Object.entries(obj).map(([ resourceName, ref ]) => ({
-      resourceName,
-      ...ref
+      ...ref,
+      resourceName
     }));
   }
 }
