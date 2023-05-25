@@ -135,6 +135,6 @@ function logDependencyMap(map, log) {
     }
   }
 
-  log(res);
+  log.info(res);
 }
 module.exports = CrudRegistry;

@@ -4,18 +4,18 @@ async function checkInboundRefs(ev, ctx) {
   const { item, crud } = ev;
 
   for (const ref of crud.getRefs('inbound')) {
-    const refIds = await findIds(ref.crud.collection, { [ref.fk]: item.id });
+    const items = await ref.crud.collection.find({
+      [ref.fk]: item.id,
+      accountId: item.accountId
+    });
+
+    const refIds = items.map(item => item.id);
 
     if (refIds.length && ref.refCheck.delete !== 'allow') {
       await handleDeleteStrategy(crud, ref, refIds, ctx);
     }
   }
 }
-
-const findIds = async(collection, filter) => {
-  const items = await collection.find(filter);
-  return items.map(item => item.id);
-};
 
 const handleDeleteStrategy = async(crud, ref, refIds, ctx) => {
   const strategy = ref.refCheck.delete;
@@ -30,7 +30,8 @@ const handleDeleteStrategy = async(crud, ref, refIds, ctx) => {
 
     case 'cascade':
       for (const id of refIds) {
-        await ref.crud.request('delete', { params: { id }});
+        const item = await ref.crud.collection.findOne({ id });
+        if (item) ref.crud.collection.deleteOne(item);
       }
       break;
 

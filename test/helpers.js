@@ -62,6 +62,8 @@ const initHelper = (opts = {}) => {
 
   const instance = crudLib.getInstance();
 
+  const crudInits = [];
+
   return {
     addResource: params => {
       params = {
@@ -73,9 +75,11 @@ const initHelper = (opts = {}) => {
       instance.addResource({ ...setupContext, params });
 
       const crud = handlerContext.getCrud(params.resourceName);
-      crud.init({ ...handlerContext, params });
+
+      crudInits.push(() => crud.init({ ...handlerContext, params }));
       return crud;
     },
+    init: () => crudInits.map(fn => fn()),
     state: handlerContext.state.db
   };
 };

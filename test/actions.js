@@ -8,8 +8,9 @@ describe('crud', () => {
   let crud;
 
   beforeEach(() => {
-    const h = initHelper({ log: true });
+    const h = initHelper({ log: false });
     crud = h.addResource(params.author);
+    h.init();
   });
 
   /*

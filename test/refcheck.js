@@ -6,10 +6,11 @@ describe('refcheck', () => {
   let postCrud, authorCrud;
 
   beforeEach(() => {
-    const h = initHelper({ log: true });
+    const h = initHelper({ log: false });
 
     authorCrud = h.addResource(params.author);
     postCrud = h.addResource(params.post);
+    h.init();
   });
 
   /*
