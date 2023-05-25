@@ -1,7 +1,7 @@
 async function checkOutboundRefs(ev, ctx) {
   const { item, session, crud } = ev;
 
-  for (const ref of crud.getRefs('out')) {
+  for (const ref of crud.getRefs('outbound')) {
     const ids = [].concat(item[ref.fk]);
 
     if (!ref.crud) return; // account

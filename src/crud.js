@@ -39,13 +39,11 @@ class Crud {
 
   getRefs(direction) {
     const { registry: { dependencyMap }, resourceName } = this;
+    return dependencyMap[direction][resourceName] || [];
+  }
 
-    const obj = dependencyMap[direction][resourceName] || {};
-
-    return Object.entries(obj).map(([ resourceName, ref ]) => ({
-      ...ref,
-      resourceName
-    }));
+  toJSON() {
+    return {};
   }
 }
 

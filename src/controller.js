@@ -1,6 +1,5 @@
 const { buildValidate } = require('./schema');
 const actions = require('./actions');
-const HookRegistry = require('./hook_registry');
 const hooks = require('./hooks');
 
 class CrudController {
@@ -8,8 +7,8 @@ class CrudController {
     this.crud = crud;
     this.validate = buildValidate(crud.schema);
 
-    this.preHooks  = new HookRegistry();
-    this.postHooks = new HookRegistry();
+    this.preHooks  = new hooks.Registry();
+    this.postHooks = new hooks.Registry();
 
     this.collection = null;
     this.auth = null;

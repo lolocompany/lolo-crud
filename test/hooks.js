@@ -1,6 +1,6 @@
 const assert = require('chai').assert;
 const { initHelper, params, assertItemResponse, deepClone } = require('./helpers');
-const { stages } = require('../src/hook_registry');
+const { stages } = require('../src/hooks');
 
 const body = { name: 'Ginny Weasley' };
 

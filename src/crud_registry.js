@@ -40,10 +40,10 @@ class CrudRegistry {
       return;
 
     } else {
-      this.dependencyMap = { in: {}, out: {}};
+      this.dependencyMap = { inbound: {}, outbound: {}};
     }
 
-    const { byResourceName, dependencyMap } = this;
+    const { byResourceName, dependencyMap: { inbound, outbound }} = this;
 
     for (const [ resourceName, crud ] of Object.entries(byResourceName)) {
       traverse(crud.schema).forEach(function() {
@@ -53,23 +53,21 @@ class CrudRegistry {
         const foreignResourceName = match[1];
         const refCheck = getRefCheck(this, resourceName);
 
-        dependencyMap.in[foreignResourceName] = {
-          ...dependencyMap.in[foreignResourceName],
-          [resourceName]: {
-            refCheck,
-            fk: this.key,
-            crud
-          }
-        };
+        inbound[foreignResourceName] = inbound[foreignResourceName] || [];
+        inbound[foreignResourceName].push({
+          resourceName,
+          refCheck,
+          fk: this.key,
+          crud
+        });
 
-        dependencyMap.out[resourceName] = {
-          ...dependencyMap.out[resourceName],
-          [foreignResourceName]: {
-            refCheck,
-            fk: this.key,
-            crud: byResourceName[foreignResourceName]
-          }
-        };
+        outbound[resourceName] = outbound[resourceName] || [];
+        outbound[resourceName].push({
+          resourceName: foreignResourceName,
+          refCheck,
+          fk: this.key,
+          crud: byResourceName[foreignResourceName]
+        });
       });
     }
   }
@@ -77,9 +75,9 @@ class CrudRegistry {
 
 const getRefCheck = (ctx, resourceName) => {
   const refCheck = {
-    ...ctx.node.refCheck,
     set: 'reject',
-    delete: 'reject'
+    delete: 'reject',
+    ...ctx.node.refCheck
   };
 
   if (refCheck.delete === 'orphan') {

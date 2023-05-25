@@ -15,7 +15,7 @@ describe('refcheck', () => {
    * Post can't reference non-existent author
    */
 
-  it('outbound', async() => {
+  it('post cannot reference non-existent author', async() => {
     const aBody = { name: 'Aldus Dumbledore' };
     const aRes = await authorCrud.request('create', { body: aBody });
 
@@ -34,10 +34,10 @@ describe('refcheck', () => {
   });
 
   /*
-   * Author with posts cannot be deleted
+   * Author with posts cannot be deleted with reject strategy
    */
 
-  it('inbound', async() => {
+  it('author with posts cannot be deleted with reject strategy', async() => {
     const aBody = { name: 'Aldus Dumbledore' };
     const aRes = await authorCrud.request('create', { body: aBody });
 

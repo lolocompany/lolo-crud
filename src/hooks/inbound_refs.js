@@ -3,7 +3,7 @@ const pluralize = require('pluralize');
 async function checkInboundRefs(ev, ctx) {
   const { item, crud } = ev;
 
-  for (const ref of crud.getRefs('in')) {
+  for (const ref of crud.getRefs('inbound')) {
     if (!ref.crud) return; // account
 
     const refIds = await findIds(ref.crud.collection, { [ref.fk]: item.id });
@@ -19,7 +19,7 @@ const findIds = async(collection, filter) => {
   return items.map(item => item.id);
 };
 
-const handleDeleteStrategy = (crud, ref, refIds, ctx) => {
+const handleDeleteStrategy = async(crud, ref, refIds, ctx) => {
   const strategy = ref.refCheck.delete;
 
   switch (strategy) {
@@ -31,7 +31,10 @@ const handleDeleteStrategy = (crud, ref, refIds, ctx) => {
       throw new Error('orphan not implemented');
 
     case 'cascade':
-      throw new Error('cascade not implemented');
+      for (const id of refIds) {
+        await ref.crud.request('delete', { params: { id }});
+      }
+      break;
 
     default:
       break;
