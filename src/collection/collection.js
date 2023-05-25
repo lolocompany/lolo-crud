@@ -1,5 +1,9 @@
 const pluralize = require('pluralize');
 
+/*
+ * Base class for collection providers
+ */
+
 class Collection {
   constructor(resourceName, ctx) {
     this.name = pluralize(kebabize(resourceName));

@@ -1,11 +1,17 @@
 const axios = require('axios');
 const lodash = require('lodash');
+const Auth = require('./auth');
 
 const cache = {};
 const cacheTTL = 5 * 60 * 1000;
 
-class LoloAuth {
+/*
+ * Base class for Auth providers
+ */
+
+class LoloAuth extends Auth {
   constructor(ctx) {
+    super(ctx);
     const { env } = ctx;
 
     this.url = (env.LO_API || 'https://dev.lolo.company/api') + '/session';
