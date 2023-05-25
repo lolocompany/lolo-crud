@@ -1,5 +1,6 @@
 const assert = require('chai').assert;
-const { initHelper, params } = require('./helpers');
+const { initHelper } = require('./helpers');
+const { params } = require('./fixtures');
 
 describe('list', () => {
   let crud;

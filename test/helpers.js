@@ -28,42 +28,6 @@ class AuthMock extends crudLib.Auth {
   }
 }
 
-const params = {
-  author: {
-    resourceName: 'author',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string' }
-      },
-      required: [ 'name' ]
-    }
-  },
-  post: {
-    resourceName: 'post',
-    schema: {
-      type: 'object',
-      properties: {
-        title: { type: 'string' },
-        content:  { type: 'string' },
-        authorId: { type: 'string' }
-      },
-      required: [ 'title', 'authorId' ]
-    }
-  },
-  comment: {
-    resourceName: 'comment',
-    schema: {
-      type: 'object',
-      properties: {
-        body: { type: 'string' },
-        postId: { type: 'string' }
-      },
-      required: [ 'body', 'postId' ]
-    }
-  },
-};
-
 const initHelper = (opts = {}) => {
   const log = {
     info: opts.log ? console.log : () => {}
@@ -128,7 +92,6 @@ async function assertItemResponse(crud, res, body = {}, status = 200) {
 
 module.exports = {
   initHelper,
-  params,
   assertItemResponse,
   deepClone: obj => JSON.parse(JSON.stringify(obj))
 };

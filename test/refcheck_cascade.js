@@ -1,5 +1,6 @@
 const assert = require('chai').assert;
-const { initHelper, deepClone, params } = require('./helpers');
+const { initHelper, deepClone } = require('./helpers');
+const { params } = require('./fixtures');
 
 describe('refcheck cascade', () => {
   let postCrud, authorCrud;

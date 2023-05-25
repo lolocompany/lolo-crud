@@ -1,5 +1,6 @@
 const assert = require('chai').assert;
-const { initHelper, params, assertItemResponse } = require('./helpers');
+const { initHelper, assertItemResponse } = require('./helpers');
+const { params } = require('./fixtures');
 
 const body = { name: 'Sirius Black' };
 
