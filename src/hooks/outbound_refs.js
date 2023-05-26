@@ -1,11 +1,20 @@
 async function checkOutboundRefs(ev, ctx) {
   const { item, session, crud } = ev;
+  const { fail } = ctx;
 
   for (const ref of crud.getRefs('outbound')) {
     const ids = [].concat(item[ref.fk]);
 
     if (ref.refCheck.allow === 'allow') return;
 
+    if (ref.fk === 'accountId') {
+      // Users can't access their account via API, use collection
+      const account = ref.collection.findOne({ id: ids[0] });
+      if (account) return;
+      fail(`account ${ids[0]} does not exist`, 422);
+    }
+
+    // Use API so any custom authorization logic is applied
     const { body } = await ref.crud.request('list', {
       session,
       query: {
@@ -20,7 +29,7 @@ async function checkOutboundRefs(ev, ctx) {
       const item = items.find(item => item.id === id);
       if (item) continue;
 
-      ctx.fail(`${ref.resourceName} with id ${id} does not exist`, 422);
+      fail(`${ref.resourceName} ${id} does not exist`, 422);
     }
   }
 }
