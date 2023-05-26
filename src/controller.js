@@ -66,11 +66,9 @@ class CrudController {
 
     await actionCtx.withHooks('load', async() => {
       if (params.id) {
-        ev.item = await collection.findOne({
-          id: params.id,
-          ...ev.accountFilter
-        });
+        ev.item = await collection.findOne({ id: params.id, ...ev.accountFilter });
         if (!ev.item) ctx.fail('not found', 404);
+        ev.prevItem = JSON.parse(JSON.stringify(ev.item));
       }
     });
   }
