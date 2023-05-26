@@ -9,7 +9,7 @@ async function checkOutboundRefs(ev, ctx) {
 
     if (ref.fk === 'accountId') {
       // Users can't access their account via API, use collection
-      const account = ref.collection.findOne({ id: ids[0] });
+      const account = ref.crud.collection.findOne({ id: ids[0] });
       if (account) return;
       fail(`account ${ids[0]} does not exist`, 422);
     }
