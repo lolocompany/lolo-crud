@@ -24,7 +24,7 @@ const withCrudProps = schema => ({
 const buildValidate = schema => {
   const ajv = new Ajv({
     allErrors: false,
-    removeAdditional: true
+    removeAdditional: true,
     useDefaults: true
   });
 
