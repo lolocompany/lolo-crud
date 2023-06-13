@@ -76,10 +76,12 @@ class CrudController {
   addDefaultHooks() {
     const { preHooks, postHooks } = this;
 
+    postHooks.add('auth', /.*/, hooks.authorizeMethod);
     postHooks.add('load', 'update', hooks.versionConflict);
     preHooks.add('save', 'create', hooks.uniqueId);
     preHooks.add('save', /create|patch|update/, hooks.checkOutboundRefs);
     preHooks.add('save', 'delete', hooks.checkInboundRefs);
+
   }
 }
 
