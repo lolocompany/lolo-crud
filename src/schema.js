@@ -16,8 +16,8 @@ const crudProps = {
 const withCrudProps = schema => ({
   ...schema,
   properties: {
-    ...schema.properties,
-    ...crudProps
+    ...crudProps,
+    ...schema.properties
   }
 });
 
