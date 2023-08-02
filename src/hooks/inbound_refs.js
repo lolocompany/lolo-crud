@@ -4,9 +4,10 @@ async function checkInboundRefs(ev, ctx) {
   const { item, crud } = ev;
 
   for (const ref of crud.getRefs('inbound')) {
+
     const items = await ref.crud.collection.find({
-      [ref.fk]: item.id,
-      accountId: item.accountId
+      accountId: item.accountId,
+      [ref.fk]: item.id
     });
 
     const refIds = items.map(item => item.id);

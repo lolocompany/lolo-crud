@@ -5,7 +5,7 @@ async function checkOutboundRefs(ev, ctx) {
   for (const ref of crud.getRefs('outbound')) {
     const ids = [].concat(item[ref.fk]).filter(id => !!id);
 
-    if (ref.refCheck.allow === 'allow' || ids.length < 1) return;
+    if (ref.refCheck.set === 'allow' || ids.length < 1) return;
 
     if (ref.fk === 'accountId') {
       // Users can't access their account via API, use collection
