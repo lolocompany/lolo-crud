@@ -24,6 +24,12 @@ class StateCollection extends Collection {
     return this.state.set(key, null);
   }
 
+  async deleteMany(filter) {
+    for (const item of this.find(filter)) {
+      await this.deleteOne(item);
+    }
+  }
+
   async findOne(filter) {
     super.findOne(filter);
     if (filter.id && filter.accountId) {

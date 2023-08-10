@@ -19,6 +19,9 @@ class Collection {
   async deleteOne(item) {
   }
 
+  async deleteMany(filter) {
+  }
+
   async findOne(filter) {
   }
 

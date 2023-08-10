@@ -5,20 +5,25 @@ async function checkInboundRefs(ev, ctx) {
 
   for (const ref of crud.getRefs('inbound')) {
 
+    if (ref.refCheck.delete === 'allow') continue;
+
     const items = await ref.crud.collection.find({
       accountId: item.accountId,
       [ref.fk]: item.id
     });
 
-    const refIds = items.map(item => item.id);
+    if (!items.length) continue;
 
-    if (refIds.length && ref.refCheck.delete !== 'allow') {
-      await handleDeleteStrategy(crud, ref, refIds, ctx);
-    }
+    await handleDeleteStrategy(
+      crud,
+      ref,
+      item,
+      items.map(item => item.id),
+      ctx);
   }
 }
 
-const handleDeleteStrategy = async(crud, ref, refIds, ctx) => {
+const handleDeleteStrategy = async(crud, ref, item, refIds, ctx) => {
   const strategy = ref.refCheck.delete;
 
   switch (strategy) {
@@ -30,10 +35,10 @@ const handleDeleteStrategy = async(crud, ref, refIds, ctx) => {
       throw new Error('orphan not implemented');
 
     case 'cascade':
-      for (const id of refIds) {
-        const item = await ref.crud.collection.findOne({ id });
-        if (item) ref.crud.collection.deleteOne(item);
-      }
+      await ref.crud.collection.deleteMany({
+        accountId: item.accountId,
+        [ref.fk]: item.id
+      });
       break;
 
     default:
