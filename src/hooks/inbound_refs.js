@@ -35,7 +35,7 @@ const handleDeleteStrategy = async(crud, ref, item, refIds, ctx) => {
       break;
 
     case 'orphan':
-      await ref.crud.collection.orphan(refIds, ref.fk, item.id);
+      await ref.crud.collection.orphan(ref.fk, item.id);
       break;
 
     case 'cascade':
