@@ -46,7 +46,7 @@ class CrudRegistry {
     const { byResourceName, dependencyMap: { inbound, outbound }} = this;
 
     for (const [ resourceName, crud ] of Object.entries(byResourceName)) {
-      traverse(crud.schema).forEach(function() {
+      traverse(crud.schema.properties).forEach(function() {
         const match = (this.key || '').match(/^(.*)Ids?$/);
         if (!match) return;
 

@@ -22,6 +22,9 @@ class Collection {
   async deleteMany(filter) {
   }
 
+  async orphan(ids, fkName, fk) {
+  }
+
   async findOne(filter) {
   }
 
