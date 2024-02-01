@@ -1,5 +1,5 @@
 const versionConflict = require('./version_conflict');
-const uniqueId = require('./unique_id');
+const validId = require('./valid_id');
 const checkOutboundRefs = require('./outbound_refs');
 const checkInboundRefs = require('./inbound_refs');
 const authorizeMethod = require('./authorize_method');
@@ -40,7 +40,7 @@ const buildKey = (stage, action) => [ stage, action ].join(':');
 
 module.exports = {
   versionConflict,
-  uniqueId,
+  validId,
   checkInboundRefs,
   checkOutboundRefs,
   authorizeMethod,
