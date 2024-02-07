@@ -24,7 +24,7 @@ async function create(ev, ctx) {
 
   return {
     body: ev.item,
-    status: 202
+    status: 201
   };
 }
 
