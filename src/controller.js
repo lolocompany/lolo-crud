@@ -24,8 +24,9 @@ class CrudController {
     this.collection = this.crud.collection;
   }
 
-  prepareEvent(ev) {
+  prepareEvent(ev, action) {
     if (!ev.crud) ev.crud = this.crud;
+    if (!ev.crudAction) ev.crudAction = action;
 
     for (const prop of [ 'body', 'query', 'params', 'headers' ]) {
       if (!ev[prop]) ev[prop] = {};
@@ -33,7 +34,7 @@ class CrudController {
   }
 
   async run(action, ev, ctx = this.ctx) {
-    this.prepareEvent(ev);
+    this.prepareEvent(ev, action);
 
     const actionCtx = {
       ...this,
