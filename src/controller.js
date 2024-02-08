@@ -47,10 +47,12 @@ class CrudController {
     };
 
     await this.preAction(actionCtx, ev, ctx);
-    const res = await actions[action].call(actionCtx, ev, ctx);
+    ev.crudResponse = await actions[action].call(actionCtx, ev, ctx);
 
-    await actionCtx.withHooks('response', () => {});
-    return res;
+    await actionCtx.withHooks('response', () => {
+    });
+
+    return ev.crudResponse;
   }
 
   async preAction(actionCtx, ev, ctx) {
