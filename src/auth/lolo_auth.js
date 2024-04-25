@@ -35,8 +35,12 @@ class LoloAuth extends Auth {
       return res.data;
 
     } catch (err) {
-      this.log.warn(err.message, opts);
-      err.status = err.statusCode;
+      err.status = err.response ? err.response.status : 500;
+
+      if (err.status === 401) {
+        err.message = 'unauthorized';
+      }
+
       throw err;
     }
   }
