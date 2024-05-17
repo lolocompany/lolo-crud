@@ -32,7 +32,7 @@ describe('hooks', () => {
 
     const cRes = await crud.request('create', { body });
     assert.strictEqual(stages.length * 2, hookEvents.length);
-    await assertItemResponse(crud, cRes, body, 202);
+    await assertItemResponse(crud, cRes, body, 201);
   });
 
   /*

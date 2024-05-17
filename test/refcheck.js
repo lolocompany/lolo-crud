@@ -32,7 +32,7 @@ describe('refcheck', () => {
 
     pBody.authorId = aRes.body.id;
     const pRes = await postCrud.request('create', { body: pBody });
-    await assertItemResponse(postCrud, pRes, pBody, 202);
+    await assertItemResponse(postCrud, pRes, pBody, 201);
   });
 
   /*

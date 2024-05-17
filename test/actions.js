@@ -19,7 +19,7 @@ describe('crud', () => {
 
   it('create', async() => {
     const cRes = await crud.request('create', { body });
-    await assertItemResponse(crud, cRes, body, 202);
+    await assertItemResponse(crud, cRes, body, 201);
   });
 
   /*

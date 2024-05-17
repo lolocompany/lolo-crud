@@ -25,7 +25,7 @@ class StateCollection extends Collection {
   }
 
   async deleteMany(filter) {
-    for (const item of this.find(filter)) {
+    for (const item of await this.find(filter)) {
       await this.deleteOne(item);
     }
   }
