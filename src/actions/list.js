@@ -1,7 +1,7 @@
 const Ajv = require('ajv');
 
 async function list(ev, ctx) {
-  const { query, accountFilter } = ev;
+  const { query } = ev;
   const { resourceNamePlural } = this.crud;
 
   prepareQueryString(query);
@@ -11,7 +11,7 @@ async function list(ev, ctx) {
 
     const { items, total } = await this.collection.findByQueryString(
       query,
-      accountFilter
+      ev.accountFilter
     );
 
     ev.items = items;
