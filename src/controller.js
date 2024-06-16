@@ -36,6 +36,9 @@ class CrudController {
   async run(action, ev, ctx = this.ctx) {
     this.prepareEvent(ev, action);
 
+    const { auth, collection } = this;
+    const { params } = ev;
+
     const actionCtx = {
       ...this,
       withHooks: async(stage, cb) => {
@@ -46,34 +49,29 @@ class CrudController {
       }
     };
 
-    await this.preAction(actionCtx, ev, ctx);
-    ev.crudResponse = await actions[action].call(actionCtx, ev, ctx);
-
-    await actionCtx.withHooks('response', () => {
-    });
-
-    return ev.crudResponse;
-  }
-
-  async preAction(actionCtx, ev, ctx) {
-    const { auth, collection } = this;
-    const { params } = ev;
-
     await actionCtx.withHooks('auth', async() => {
-      if (!ev.session) {
-        ev.session = await auth.getSession(ev.headers);
-      }
+      if (ev.session) return;
+      ev.session = await auth.getSession(ev.headers);
     });
 
     ev.accountFilter = { accountId: ev.session.accountId };
 
-    await actionCtx.withHooks('load', async() => {
-      if (params.id) {
+    if (params.id) {
+      await actionCtx.withHooks('load', async() => {
+        if (ev.item) return;
+
         ev.item = await collection.findOne({ id: params.id, ...ev.accountFilter });
         if (!ev.item) ctx.fail('not found', 404);
+
         ev.prevItem = JSON.parse(JSON.stringify(ev.item));
-      }
-    });
+      });
+    }
+
+    ev.crudResponse = await actions[action].call(actionCtx, ev, ctx);
+
+    await actionCtx.withHooks('response', () => {});
+
+    return ev.crudResponse;
   }
 
   addDefaultHooks() {
