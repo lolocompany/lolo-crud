@@ -16,11 +16,11 @@ async function checkOutboundRefs(ev, ctx) {
 
     // Use API so any custom authorization logic is applied
     const { body } = await ref.crud.request('list', {
-      limit: 1000,
       session,
       query: {
         q: { id: ids },
-        pick: [ 'id' ]
+        pick: [ 'id' ],
+        limit: 500,
       }
     });
 
