@@ -10,7 +10,7 @@ class LoloAuth extends Auth {
     super(ctx);
     const { env } = ctx;
 
-    this.url = (env.LO_API || 'https://dev.lolo.company/api') + '/session';
+    this.url = (env.LO_AUTH_API || env.LO_API || 'https://dev.lolo.company/api') + '/session';
     this.log = ctx.log;
   }
 
