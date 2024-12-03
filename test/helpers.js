@@ -24,6 +24,11 @@ class AuthMock extends crudLib.Auth {
     return {
       accountId: '000000000000000000000',
       email: 'test@mock.co',
+      role: 'write',
+      permissions: [{
+        actions: [ 'list', 'create', 'read', 'update', 'delete' ],
+        resources: [ 'author', 'post', 'comment' ]
+      }]
     };
   }
 }

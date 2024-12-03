@@ -2,7 +2,7 @@ const versionConflict = require('./version_conflict');
 const validId = require('./valid_id');
 const checkOutboundRefs = require('./outbound_refs');
 const checkInboundRefs = require('./inbound_refs');
-const authorizeMethod = require('./authorize_method');
+const authorizeAction = require('./authorize_action');
 
 const actions = [ 'create', 'read', 'update', 'delete', 'list', 'patch' ];
 const stages =  [ 'auth', 'load', 'validate', 'save', 'response' ];
@@ -43,7 +43,7 @@ module.exports = {
   validId,
   checkInboundRefs,
   checkOutboundRefs,
-  authorizeMethod,
+  authorizeAction,
   Registry: HookRegistry,
   stages,
   actions
