@@ -35,7 +35,7 @@ class StateCollection extends Collection {
     if (filter.id && filter.accountId) {
       // avoid scan if we're able to build a key
       const item = this.state.get(this.buildKey(filter));
-      if (this.exactMatch(item, filter)) return item;
+      if (this.matchFilter(item, filter)) return item;
     }
 
     const items = await this.find(filter);
@@ -49,7 +49,7 @@ class StateCollection extends Collection {
     return this.state.keys(re).reduce(
       (memo, key) => {
         const item = this.state.get(key);
-        if (item && this.exactMatch(item, filter)) memo.push(item);
+        if (item && this.matchFilter(item, filter)) memo.push(item);
         return memo;
       },
       []
@@ -70,10 +70,15 @@ class StateCollection extends Collection {
     ].join(':');
   }
 
-  exactMatch(item = {}, filter = {}) {
-    return Object.entries(filter).every(
-      ([ fk, fv ]) => item[fk] === fv
-    );
+  matchFilter(item = {}, filter = {}) {
+    return Object.entries(filter).every(([ key, value ]) => {
+      if (Array.isArray(value)) {
+        return value.includes(item[key]);
+
+      } else {
+        return item[key] === value;
+      }
+    });
   }
 }
 
