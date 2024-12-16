@@ -1,5 +1,5 @@
 
-function authorizeMethod(ev, ctx) {
+function authorizeAction(ev, ctx) {
   const { params, fail } = ctx;
   const { crudAction, crud, session } = ev;
 
@@ -34,4 +34,4 @@ function authorizeMethod(ev, ctx) {
   }
 }
 
-module.exports = authorizeMethod;
+module.exports = authorizeAction;

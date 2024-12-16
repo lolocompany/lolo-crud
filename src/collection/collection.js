@@ -7,6 +7,7 @@ const pluralize = require('pluralize');
 class Collection {
   constructor(resourceName, ctx) {
     this.name = pluralize(kebabize(resourceName));
+    this.log = ctx.log;
   }
 
   async insertOne(item) {

@@ -59,7 +59,18 @@ class StateCollection extends Collection {
   async findByQueryString(query, baseFilter) {
     super.findByQueryString(query, baseFilter);
     const items = await this.find(baseFilter);
-    return findByQueryString(items, query);
+    const res = findByQueryString(items, query);
+    
+    /*
+    this.log.info('findByQueryString', 
+      query, 
+      baseFilter, 
+      items.map(it => it.id),
+      res.items.map(it => it.id)
+    );
+    */
+
+    return res;
   }
 
   buildKey(item) {

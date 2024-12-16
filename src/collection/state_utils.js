@@ -2,28 +2,28 @@ const lodash = require('lodash');
 
 const findByQueryString = (items, query) => {
   const { q, offset, limit, pick, sort, qor, qci, qre } = query;
-  const fn = JSON.parse(qor) ? 'some' : 'every';
+  const fn = JSON.parse(qor) ? 'some' : 'every'; // or | and
 
   Object.keys(q).forEach(key => {
-    q[key] = [].concat(q[key]); // ensure array
+    q[key] = [].concat(q[key]);
 
-    if (JSON.parse(qre)) {
-      // Build RegExp's once
-      q[key] = q[key].map(pattern => {
-        return new RegExp(pattern, qci ? 'i' : undefined);
-      });
-    }
+    if (!/ids?$/.test(key)) q[key] = q[key].map(
+      pattern => new RegExp(pattern, 'i')
+    );
   });
 
   const filterFn = item => {
-    return Object.keys(q)[fn](key => q[key][fn](pattern => {
-
-      const value = item.hasOwnProperty(key) ? '' + item[key] : '';
-
-      if (pattern.test) return pattern.test(value);
-      if (JSON.parse(qci)) return pattern.toLowerCase() === value.toLowerCase();
-      return pattern === value;
-    }));
+    return Object.keys(q)[fn](
+      key => q[key].some(pattern => {
+        const value = typeof item[key] === 'undefined' ? 
+          String() : 
+          String(item[key]);
+        
+        return pattern.test ?
+          pattern.test(value) :
+          pattern.toLowerCase() === value.toLowerCase();
+      })
+    );
   };
 
   items = items
@@ -34,9 +34,9 @@ const findByQueryString = (items, query) => {
   items = items.slice(offset, offset + limit);
 
   if (Array.isArray(pick)) {
-    items = items.map(item => {
-      return lodash.pick(item, pick);
-    });
+    items = items.map(
+      item => lodash.pick(item, pick)
+    );
   }
 
   return {
