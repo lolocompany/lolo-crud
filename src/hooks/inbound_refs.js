@@ -1,16 +1,23 @@
 const pluralize = require('pluralize');
 
 async function checkInboundRefs(ev, ctx) {
-  const { item, crud } = ev;
+  const { item, crud, session } = ev;
 
   for (const ref of crud.getRefs('inbound')) {
 
     if (ref.refCheck.delete === 'allow') continue;
 
-    const items = await ref.crud.collection.find({
-      accountId: item.accountId,
-      [ref.fk]: item.id
+    // Use API so any custom authorization logic is applied
+    const { body } = await ref.crud.request('list', {
+      session,
+      query: {
+        q: { [ref.fk]: item.id },
+        pick: [ 'id' ],
+        limit: 500
+      }
     });
+
+    const items = body[ref.crud.resourceNamePlural];
 
     if (!items.length) continue;
 

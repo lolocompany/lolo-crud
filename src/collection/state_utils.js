@@ -7,18 +7,22 @@ const findByQueryString = (items, query) => {
   Object.keys(q).forEach(key => {
     q[key] = [].concat(q[key]);
 
-    if (!/ids?$/.test(key)) q[key] = q[key].map(
+    if (!/Ids?$/.test(key)) q[key] = q[key].map(
       pattern => new RegExp(pattern, 'i')
     );
   });
 
   const filterFn = item => {
     return Object.keys(q)[fn](
-      key => q[key].some(pattern => {
+      key => q[key].some(pattern => {        
+        if (key.endsWith('Ids')) {
+          return (item[key] || []).includes(pattern);
+        }
+
         const value = typeof item[key] === 'undefined' ? 
           String() : 
           String(item[key]);
-        
+
         return pattern.test ?
           pattern.test(value) :
           pattern.toLowerCase() === value.toLowerCase();

@@ -59,18 +59,7 @@ class StateCollection extends Collection {
   async findByQueryString(query, baseFilter) {
     super.findByQueryString(query, baseFilter);
     const items = await this.find(baseFilter);
-    const res = findByQueryString(items, query);
-    
-    /*
-    this.log.info('findByQueryString', 
-      query, 
-      baseFilter, 
-      items.map(it => it.id),
-      res.items.map(it => it.id)
-    );
-    */
-
-    return res;
+    return findByQueryString(items, query);
   }
 
   buildKey(item) {
@@ -84,10 +73,12 @@ class StateCollection extends Collection {
   matchFilter(item = {}, filter = {}) {
     return Object.entries(filter).every(([ key, value ]) => {
       if (Array.isArray(value)) {
-        return value.includes(item[key]);
+        return value.includes(item[key]); // or
 
       } else {
-        return item[key] === value;
+        return key.endsWith('Ids') ?
+          item[key].includes(value) :     // in
+          item[key] === value;            // eq
       }
     });
   }
