@@ -16,7 +16,7 @@ const findByQueryString = (items, query) => {
     return Object.keys(q)[fn](
       key => q[key].some(pattern => {        
         if (key.endsWith('Ids')) {
-          return (item[key] || []).includes(pattern);
+          return (item[key] || []).includes(pattern);        // in
         }
 
         const value = typeof item[key] === 'undefined' ? 
@@ -24,8 +24,8 @@ const findByQueryString = (items, query) => {
           String(item[key]);
 
         return pattern.test ?
-          pattern.test(value) :
-          pattern.toLowerCase() === value.toLowerCase();
+          pattern.test(value) :                              // re
+          pattern.toLowerCase() === value.toLowerCase();     // eq
       })
     );
   };
