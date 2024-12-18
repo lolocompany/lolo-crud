@@ -3,7 +3,6 @@ const lodash = require('lodash');
 const Auth = require('./auth');
 
 const cache = {};
-const cacheTTL = 5 * 60 * 1000;
 
 class LoloAuth extends Auth {
   constructor(ctx) {
@@ -12,6 +11,10 @@ class LoloAuth extends Auth {
 
     this.url = (env.LO_AUTH_API || env.LO_API || 'https://dev.lolo.company/api') + '/session';
     this.log = ctx.log;
+
+    this.cacheTTL = (env.SESSION_CACHE_MS && !isNaN(env.SESSION_CACHE_MS)) ?
+      parseInt(env.SESSION_CACHE_MS) :
+      60 * 1000;
   }
 
   async getSession(headers) {
@@ -31,8 +34,12 @@ class LoloAuth extends Auth {
     try {
       const res = await axios(opts);
       cache[key] = res.data;
-      setTimeout(() => { delete cache[key]; }, cacheTTL);
-      return res.data;
+
+      setTimeout(() => {
+        delete cache[key];
+      }, this.cacheTTL);
+
+      return cache[key];
 
     } catch (err) {
       err.status = err.response ? err.response.status : 500;

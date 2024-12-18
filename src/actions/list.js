@@ -80,7 +80,7 @@ const validateQueryString = ajv.compile({
       type: 'integer',
       default: '10',
       minimum: 0,
-      maximum: 500
+      maximum: 1000
     },
     offset: {
       type: 'integer',

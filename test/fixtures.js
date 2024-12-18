@@ -7,7 +7,8 @@ const params = {
         name: { type: 'string' }
       },
       required: [ 'name' ]
-    }
+    },
+    authorize: true
   },
   post: {
     resourceName: 'post',
@@ -19,7 +20,8 @@ const params = {
         authorId: { type: 'string' }
       },
       required: [ 'title', 'authorId' ]
-    }
+    },
+    authorize: true
   },
   comment: {
     resourceName: 'comment',
@@ -30,7 +32,8 @@ const params = {
         postId: { type: 'string' }
       },
       required: [ 'body', 'postId' ]
-    }
+    },
+    authorize: true
   },
 };
 
