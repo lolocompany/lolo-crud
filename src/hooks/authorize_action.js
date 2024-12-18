@@ -15,8 +15,10 @@ function authorizeAction(ev, ctx) {
 
   } else if (session.permissions) {
     // new rbac
+    const rbacAction = crudAction === 'patch' ? 'update' : crudAction;
+
     for (const { actions, resources } of session.permissions || []) {
-      if (actions.includes(crudAction) && resources.includes(crud.resourceName)) {
+      if (actions.includes(rbacAction) && resources.includes(crud.resourceName)) {
         allow = true;
         break;
       }
