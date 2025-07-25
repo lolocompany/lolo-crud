@@ -14,8 +14,9 @@ async function checkOutboundRefs(ev, ctx) {
       fail(`account ${ids[0]} does not exist`, 422);
     }
 
-    // Use API so any custom authorization logic is applied
+    // Use API so any custom tenancy logic is applied
     const { body } = await ref.crud.request('list', {
+      skipAuthorize: true, // but ignore read permission check
       session,
       query: {
         q: { id: ids },
