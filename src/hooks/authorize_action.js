@@ -1,11 +1,11 @@
 
 function authorizeAction(ev, ctx) {
   const { params, fail } = ctx;
-  const { crudAction, crud, session, skipAuthorize } = ev;
+  const { crudAction, crud, session, crudSkipAuthorize } = ev;
 
   let allow = false;
 
-  if (!params.authorize || skipAuthorize) {
+  if (!params.authorize || crudSkipAuthorize) {
     // authorization disabled
     allow = true;
 

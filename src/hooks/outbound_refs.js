@@ -16,7 +16,7 @@ async function checkOutboundRefs(ev, ctx) {
 
     // Use API so any custom tenancy logic is applied
     const { body } = await ref.crud.request('list', {
-      skipAuthorize: true, // but ignore read permission check
+      crudSkipAuthorize: true, // but ignore read permission check
       session,
       query: {
         q: { id: ids },
