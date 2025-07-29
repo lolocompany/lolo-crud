@@ -1,11 +1,11 @@
 
 function authorizeAction(ev, ctx) {
-  const { params, fail } = ctx;
-  const { crudAction, crud, session } = ev;
+  const { params, fail, log } = ctx;
+  const { crudAction, crud, session, crudSkipAuthorize } = ev;
 
   let allow = false;
 
-  if (!params.authorize) {
+  if (!params.authorize || crudSkipAuthorize) {
     // authorization disabled
     allow = true;
 
@@ -32,6 +32,7 @@ function authorizeAction(ev, ctx) {
   }
 
   if (!allow) {
+    log.info('rejected', crudAction, crud.resourceName, 'for', session.email);
     fail('Forbidden', 403);
   }
 }

@@ -7,8 +7,9 @@ async function checkInboundRefs(ev, ctx) {
 
     if (ref.refCheck.delete === 'allow') continue;
 
-    // Use API so any custom authorization logic is applied
+    // Use API so any custom tenancy logic is applied
     const { body } = await ref.crud.request('list', {
+      crudSkipAuthorize: true, // but ignore read permission check
       session,
       query: {
         q: { [ref.fk]: item.id },
