@@ -18,16 +18,23 @@ class LoloAuth extends Auth {
   }
 
   async getSession(headers) {
-    headers = lodash.pickBy(headers, (v, k) => {
-      return k === 'authorization' || /^lolo-/.test(k);
-    });
+    const authHeaders = lodash.pick(headers || {}, [
+      'authorization',
+      'lolo-account-id',
+      'lolo-api-key'
+    ]);
 
-    const key = JSON.stringify(headers);
+    // Stable cache key independent of object key insertion order.
+    const key = JSON.stringify([
+      authHeaders.authorization || '',
+      authHeaders['lolo-account-id'] || '',
+      authHeaders['lolo-api-key'] || ''
+    ]);
     if (cache[key]) return cache[key];
 
     const opts = {
       url: this.url,
-      headers,
+      headers: authHeaders,
       json: true
     };
 
