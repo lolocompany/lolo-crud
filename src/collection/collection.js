@@ -33,6 +33,13 @@ class Collection {
 
   async findByQueryString(query, baseFilter) {
   }
+
+  async exportCursor(query, baseFilter, resumeAfterId, opts = {}) {
+  }
+
+  async countDocuments(query, baseFilter, opts = {}) {
+    return null;
+  }
 }
 
 function kebabize(str) {

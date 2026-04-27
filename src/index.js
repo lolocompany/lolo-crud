@@ -3,6 +3,7 @@ const CrudRegistry = require('./crud_registry');
 
 const { Collection, StateCollection } = require('./collection');
 const { Auth, LoloAuth } = require('./auth');
+const formatters = require('./formatters');
 
 const getInstance = () => {
   const registry = new CrudRegistry();
@@ -37,5 +38,6 @@ module.exports = {
   addResource: singleton.addResource,
   getInstance,
   Collection,
-  Auth
+  Auth,
+  ...formatters
 };
