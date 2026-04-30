@@ -2,7 +2,6 @@
 
 const crypto = require('crypto');
 const Ajv = require('ajv');
-const { getExportQueue } = require('../');
 
 const MAX_ACTIVE_PER_USER = 3;
 
@@ -20,12 +19,12 @@ const validate = ajv.compile({
   }
 });
 
-module.exports = async function exportAction(ev) {
+module.exports = async function exportAction(ev, ctx) {
   if (!validate(ev.query)) {
     const err = new Error('validation failed');
     err.body = validate.errors; err.status = 422; throw err;
   }
-  const queue = getExportQueue();
+  const queue = ctx.getExportQueue();
   if (!queue) return { status: 501, body: { error: 'export not configured' } };
 
   if (ev.query.jobId) return getStatus(queue, ev.query.jobId, ev.session.email);

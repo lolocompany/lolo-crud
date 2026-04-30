@@ -28,11 +28,12 @@ const getInstance = () => {
     });
 
     exportWorker.start(registry, log);
+
+    addHelper('getExportQueue', () => () => exportWorker.getQueue());
   };
 
   return {
-    addResource,
-    getExportQueue: () => exportWorker.getQueue()
+    addResource
   };
 };
 
@@ -40,7 +41,6 @@ const singleton = getInstance();
 
 module.exports = {
   addResource: singleton.addResource,
-  getExportQueue: singleton.getExportQueue,
   getInstance,
   Collection,
   Auth,
