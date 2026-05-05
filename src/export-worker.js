@@ -14,12 +14,9 @@ const conn = {
   ...(process.env.REDIS_PASSWORD ? { password: process.env.REDIS_PASSWORD } : {})
 };
 const Bucket = process.env.EXPORT_S3_BUCKET;
-const awsClientConfig = {
-  region: process.env.EXPORT_AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.EXPORT_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.EXPORT_AWS_SECRET_ACCESS_KEY
-  }
+const credentials = {
+  accessKeyId: process.env.EXPORT_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.EXPORT_AWS_SECRET_ACCESS_KEY
 };
 
 let started = false;
@@ -38,11 +35,15 @@ const start = (registry, log) => {
   if (started) return;
   started = true;
   const s3 = new S3Client({
-    ...awsClientConfig,
+    credentials,
+    region: process.env.EXPORT_S3_REGION,
     endpoint: process.env.EXPORT_AWS_ENDPOINT,
     forcePathStyle: !!process.env.EXPORT_AWS_ENDPOINT
   });
-  const ses = new SESClient(awsClientConfig);
+  const ses = new SESClient({
+    credentials,
+    region: process.env.EXPORT_SES_REGION || process.env.EXPORT_S3_REGION
+  });
   queue = new Queue(QUEUE, { connection: conn });
 
   new Worker(QUEUE, async job => {
