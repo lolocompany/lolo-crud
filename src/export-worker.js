@@ -1,5 +1,3 @@
-'use strict';
-
 const { Worker, Queue } = require('bullmq');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { Upload } = require('@aws-sdk/lib-storage');
