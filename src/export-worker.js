@@ -62,7 +62,7 @@ const start = (registry, log) => {
     }), { expiresIn: 86400 });
     await ses.send(new SendEmailCommand({
       Destination: { ToAddresses: [email] },
-      Source: 'lo-lo-no-reply@lolo.company',
+      Source: process.env.EXPORT_SES_FROM_ADDRESS || 'lo-lo-no-reply@lolo.company',
       Message: {
         Subject: { Data: `Your ${resourceNamePlural} export is ready` },
         Body: { Html: { Data: `<p>Your export is ready.</p><p><a href="${url}">Download (link expires in 24 h)</a></p>` } }
