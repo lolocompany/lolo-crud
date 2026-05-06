@@ -15,10 +15,10 @@ function authorizeAction(ev, ctx) {
 
   } else if (session.permissions) {
     // new rbac
-    const rbacAction = crudAction === 'patch' ? 'update' : crudAction;
+    let rbacAction = crudAction === 'patch' ? 'update' : crudAction;
 
     //Export action using list permission
-    const rbacAction = crudAction === 'export' ? 'list' : crudAction;
+    rbacAction = rbacAction === 'export' ? 'list' : crudAction;
 
     for (const { actions, resources } of session.permissions || []) {
       if (actions.includes(rbacAction) && resources.includes(crud.resourceName)) {
