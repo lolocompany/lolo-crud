@@ -55,6 +55,16 @@ const buildCsvFlatten = pick => {
   };
 };
 
+const countingPassThrough = () => {
+  let count = 0;
+  const t = new Transform({
+    objectMode: true,
+    transform(d, _e, cb) { count++; cb(null, d); }
+  });
+  t.getCount = () => count;
+  return t;
+};
+
 const start = (registry, log) => {
   if (started) return;
   started = true;
@@ -71,9 +81,11 @@ const start = (registry, log) => {
   queue = new Queue(QUEUE, { connection: conn });
 
   new Worker(QUEUE, async job => {
-    const { resourceName, query, accountFilter, format, pick, email } = job.data;
+    const { resourceName, query, accountFilter, format, email } = job.data;
+    const { pick } = query;
     const { collection, resourceNamePlural } = registry.getCrud(resourceName);
-    const cursor = await collection.exportCursor(query, accountFilter, null, { pick });
+    const cursor = await collection.exportCursor(query, accountFilter);
+    const counter = countingPassThrough();
     const formatter = format === 'csv'
       ? csvFormat({
           headers: Array.isArray(pick) && pick.length > 0 ? pick : true,
@@ -81,7 +93,10 @@ const start = (registry, log) => {
           transform: buildCsvFlatten(pick),
         })
       : jsonStream();
-    const Body = Readable.from(cursor, { objectMode: true }).pipe(formatter).pipe(createGzip());
+    const Body = Readable.from(cursor, { objectMode: true })
+      .pipe(counter)
+      .pipe(formatter)
+      .pipe(createGzip());
     const Key = `exports/${resourceNamePlural}/${job.id}.${format}.gz`;
     await new Upload({ client: s3, params: { Bucket, Key, Body } }).done();
     const url = await getSignedUrl(s3, new GetObjectCommand({
@@ -98,6 +113,7 @@ const start = (registry, log) => {
         Body: { Html: { Data: `<p>Your export is ready.</p><p><a href="${url}">Download (link expires in 24 h)</a></p>` } }
       }
     }));
+    return { total: counter.getCount() };
   }, { connection: conn });
 
   log.info({ queue: QUEUE }, 'export-worker started');

@@ -63,35 +63,19 @@ class StateCollection extends Collection {
   }
 
   // exportCursor — async generator yielding the full filtered/sorted
-  // result set for the export action. Returns `{ total }` so the worker
-  // can persist a determinate progress denominator without a second
-  // pass. State-backed collections materialize everything in-memory
-  // (the only consumer is the test suite) so total is exact.
-  async exportCursor(query, baseFilter, resumeAfterId, opts = {}) {
-    super.exportCursor(query, baseFilter, resumeAfterId, opts);
+  // result set for the export action. Used by any CRUD resource that
+  // selects the `crud-collection-default` helper (the in-memory "Lolo
+  // State" backend) and has the `export` action enabled.
+  async exportCursor(query, baseFilter, opts = {}) {
+    super.exportCursor(query, baseFilter, opts);
     const items = await this.find(baseFilter);
-    let sorted = filterAndSortAll(items, query, { keepKey: true });
-
-    if (resumeAfterId) {
-      const idx = sorted.findIndex(item => item.id === resumeAfterId);
-      if (idx >= 0) sorted = sorted.slice(idx + 1);
-    }
-
-    const total = sorted.length;
+    const sorted = filterAndSortAll(items, query, { keepKey: true });
 
     async function* gen() {
       for (const item of sorted) yield item;
     }
 
-    const iterator = gen();
-    iterator.total = total;
-    return iterator;
-  }
-
-  async countDocuments(query, baseFilter, opts = {}) {
-    super.countDocuments(query, baseFilter, opts);
-    const items = await this.find(baseFilter);
-    return filterAndSortAll(items, query, { keepKey: true }).length;
+    return gen();
   }
 
   buildKey(item) {

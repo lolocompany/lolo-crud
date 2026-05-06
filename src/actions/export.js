@@ -42,7 +42,6 @@ module.exports = async function exportAction(ev, ctx) {
     query,
     accountFilter: ev.accountFilter,
     format: ev.query.format,
-    pick: ev.query.pick,
     email: ev.session.email
   }, { jobId: newJobId });
   return { status: 202, body: { jobId: newJobId } };

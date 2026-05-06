@@ -69,12 +69,12 @@ const by = expr => {
 //
 // Mirrors the filter+sort behavior of `findByQueryString` but does NOT
 // slice(offset, offset + limit) — exports always cover the full filtered
-// set, paged externally via cursor checkpointing.
+// set.
 //
 // `opts.keepKey` (default false) skips the `pick` projection; the export
-// flow passes `keepKey: true` so every item still carries its `id` for
-// resume matching. `src/formatters.js#stripResumeKey` is what later drops
-// the key from output if the user's pick[] didn't include it.
+// flow passes `keepKey: true` so every item still carries its full field
+// set into the worker's pipeline, where the formatter does the final
+// projection based on the requested `pick` columns.
 const filterAndSortAll = (items, query, opts = {}) => {
   const { q, pick, sort, qor } = query;
   const fn = JSON.parse(qor) ? 'some' : 'every';
