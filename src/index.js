@@ -4,7 +4,6 @@ const exportWorker = require('./export-worker');
 
 const { Collection, StateCollection } = require('./collection');
 const { Auth, LoloAuth } = require('./auth');
-const formatters = require('./formatters');
 
 const getInstance = () => {
   const registry = new CrudRegistry();
@@ -43,6 +42,5 @@ module.exports = {
   addResource: singleton.addResource,
   getInstance,
   Collection,
-  Auth,
-  ...formatters
+  Auth
 };

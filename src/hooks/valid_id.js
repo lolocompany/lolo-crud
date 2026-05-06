@@ -1,8 +1,10 @@
+const RESERVED_IDS = new Set(['all', 'export']);
+
 async function validId(ev, ctx) {
   const { item, crud } = ev;
 
-  if (item.id === 'all') {
-    ctx.fail('id is not valid', 422); // reserved for /accounts/all etc
+  if (RESERVED_IDS.has(item.id)) {
+    ctx.fail('id is not valid', 422);
   }
 
   const otherItem = await crud.collection.findOne({ id: item.id });

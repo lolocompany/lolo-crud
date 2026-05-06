@@ -31,6 +31,30 @@ const jsonStream = () => {
   });
 };
 
+const formatScalar = v => {
+  if (v == null) return '';
+  if (v instanceof Date) return v.toISOString();
+  if (typeof v === 'object') return JSON.stringify(v);
+  return v;
+};
+
+const buildCsvFlatten = pick => {
+  const dottedPaths = (Array.isArray(pick) ? pick : []).filter(p => p && p.includes('.'));
+  return row => {
+    const out = {};
+    for (const [k, v] of Object.entries(row)) out[k] = formatScalar(v);
+    for (const path of dottedPaths) {
+      let cur = row;
+      for (const seg of path.split('.')) {
+        if (cur == null || typeof cur !== 'object') { cur = undefined; break; }
+        cur = cur[seg];
+      }
+      out[path] = formatScalar(cur);
+    }
+    return out;
+  };
+};
+
 const start = (registry, log) => {
   if (started) return;
   started = true;
@@ -50,7 +74,13 @@ const start = (registry, log) => {
     const { resourceName, query, accountFilter, format, pick, email } = job.data;
     const { collection, resourceNamePlural } = registry.getCrud(resourceName);
     const cursor = await collection.exportCursor(query, accountFilter, null, { pick });
-    const formatter = format === 'csv' ? csvFormat({ headers: true }) : jsonStream();
+    const formatter = format === 'csv'
+      ? csvFormat({
+          headers: Array.isArray(pick) && pick.length > 0 ? pick : true,
+          strictColumnHandling: true,
+          transform: buildCsvFlatten(pick),
+        })
+      : jsonStream();
     const Body = Readable.from(cursor, { objectMode: true }).pipe(formatter).pipe(createGzip());
     const Key = `exports/${resourceNamePlural}/${job.id}.${format}.gz`;
     await new Upload({ client: s3, params: { Bucket, Key, Body } }).done();
