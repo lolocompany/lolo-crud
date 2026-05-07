@@ -26,9 +26,10 @@ const getInstance = () => {
       return new LoloAuth(ctx);
     });
 
-    exportWorker.start(registry, log);
-
-    addHelper('getExportQueue', () => () => exportWorker.getQueue());
+    if (params.actions?.export) {
+      exportWorker.start(registry, log);
+      addHelper('getExportQueue', () => () => exportWorker.getQueue());
+    }
   };
 
   return {
