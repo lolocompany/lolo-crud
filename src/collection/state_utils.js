@@ -65,6 +65,54 @@ const by = expr => {
   };
 };
 
+// filterAndSortAll — used by `exportCursor` for state-backed collections.
+//
+// Mirrors the filter+sort behavior of `findByQueryString` but does NOT
+// slice(offset, offset + limit) — exports always cover the full filtered
+// set.
+//
+// `opts.keepKey` (default false) skips the `pick` projection; the export
+// flow passes `keepKey: true` so every item still carries its full field
+// set into the worker's pipeline, where the formatter does the final
+// projection based on the requested `pick` columns.
+const filterAndSortAll = (items, query, opts = {}) => {
+  const { q, pick, sort, qor } = query;
+  const fn = JSON.parse(qor) ? 'some' : 'every';
+
+  const qCopy = {};
+  Object.keys(q).forEach(key => {
+    qCopy[key] = [].concat(q[key]);
+    if (!/Ids?$/.test(key)) {
+      qCopy[key] = qCopy[key].map(pattern => new RegExp(pattern, 'i'));
+    }
+  });
+
+  const filterFn = item => {
+    return Object.keys(qCopy)[fn](
+      key => qCopy[key].some(pattern => {
+        if (key.endsWith('Ids')) {
+          return (item[key] || []).includes(pattern);
+        }
+        const value = typeof item[key] === 'undefined' ?
+          String() :
+          String(item[key]);
+        return pattern.test ?
+          pattern.test(value) :
+          pattern.toLowerCase() === value.toLowerCase();
+      })
+    );
+  };
+
+  let out = items.filter(filterFn).sort(by(sort));
+
+  if (!opts.keepKey && Array.isArray(pick)) {
+    out = out.map(item => lodash.pick(item, pick));
+  }
+
+  return out;
+};
+
 module.exports = {
-  findByQueryString
+  findByQueryString,
+  filterAndSortAll
 };

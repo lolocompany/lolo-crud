@@ -1,5 +1,6 @@
 const Crud = require('./crud');
 const CrudRegistry = require('./crud_registry');
+const exportWorker = require('./export-worker');
 
 const { Collection, StateCollection } = require('./collection');
 const { Auth, LoloAuth } = require('./auth');
@@ -24,6 +25,11 @@ const getInstance = () => {
     addHelper('crud-auth-default', ctx => () => {
       return new LoloAuth(ctx);
     });
+
+    if (params.actions?.export) {
+      exportWorker.start(registry, log);
+      addHelper('getExportQueue', () => () => exportWorker.getQueue());
+    }
   };
 
   return {

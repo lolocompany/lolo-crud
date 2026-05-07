@@ -1,5 +1,5 @@
 const Collection = require('./collection');
-const { findByQueryString } = require('./state_utils');
+const { findByQueryString, filterAndSortAll } = require('./state_utils');
 
 class StateCollection extends Collection {
   constructor(resourceName, ctx) {
@@ -60,6 +60,22 @@ class StateCollection extends Collection {
     super.findByQueryString(query, baseFilter);
     const items = await this.find(baseFilter);
     return findByQueryString(items, query);
+  }
+
+  // exportCursor — async generator yielding the full filtered/sorted
+  // result set for the export action. Used by any CRUD resource that
+  // selects the `crud-collection-default` helper (the in-memory "Lolo
+  // State" backend) and has the `export` action enabled.
+  async exportCursor(query, baseFilter, opts = {}) {
+    super.exportCursor(query, baseFilter, opts);
+    const items = await this.find(baseFilter);
+    const sorted = filterAndSortAll(items, query, { keepKey: true });
+
+    async function* gen() {
+      for (const item of sorted) yield item;
+    }
+
+    return gen();
   }
 
   buildKey(item) {

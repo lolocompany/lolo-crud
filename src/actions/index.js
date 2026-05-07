@@ -5,5 +5,6 @@ module.exports = {
   delete: require('./delete'),
   list:   require('./list'),
   patch:  require('./patch'),
-  schema: require('./schema')
+  schema: require('./schema'),
+  export: require('./export')
 };

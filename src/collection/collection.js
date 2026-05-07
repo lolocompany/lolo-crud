@@ -33,6 +33,9 @@ class Collection {
 
   async findByQueryString(query, baseFilter) {
   }
+
+  async exportCursor(query, baseFilter, opts = {}) {
+  }
 }
 
 function kebabize(str) {
