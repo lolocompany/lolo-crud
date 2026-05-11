@@ -1,4 +1,9 @@
 
+const RBAC_ACTION_MAP = {
+  patch: 'update',
+  export: 'list',
+};
+
 function authorizeAction(ev, ctx) {
   const { params, fail, log } = ctx;
   const { crudAction, crud, session, crudSkipAuthorize } = ev;
@@ -15,10 +20,7 @@ function authorizeAction(ev, ctx) {
 
   } else if (session.permissions) {
     // new rbac
-    let rbacAction = crudAction === 'patch' ? 'update' : crudAction;
-
-    //Export action using list permission
-    rbacAction = rbacAction === 'export' ? 'list' : rbacAction;
+    const rbacAction = RBAC_ACTION_MAP[crudAction] || crudAction;
 
     for (const { actions, resources } of session.permissions || []) {
       if (actions.includes(rbacAction) && resources.includes(crud.resourceName)) {
