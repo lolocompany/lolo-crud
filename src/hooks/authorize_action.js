@@ -18,7 +18,7 @@ function authorizeAction(ev, ctx) {
     let rbacAction = crudAction === 'patch' ? 'update' : crudAction;
 
     //Export action using list permission
-    rbacAction = rbacAction === 'export' ? 'list' : crudAction;
+    rbacAction = rbacAction === 'export' ? 'list' : rbacAction;
 
     for (const { actions, resources } of session.permissions || []) {
       if (actions.includes(rbacAction) && resources.includes(crud.resourceName)) {
