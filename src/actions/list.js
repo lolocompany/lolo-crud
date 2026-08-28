@@ -86,6 +86,10 @@ const validateQueryString = ajv.compile({
       type: 'integer',
       default: 0,
       minimum: 0
+    },
+    consistent: {
+      type: 'boolean',
+      default: false
     }
   }
 });

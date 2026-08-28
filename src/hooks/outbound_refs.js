@@ -22,6 +22,7 @@ async function checkOutboundRefs(ev, ctx) {
         q: { id: ids },
         pick: [ 'id' ],
         limit: 500,
+        consistent: true
       }
     });
 
