@@ -14,7 +14,8 @@ async function checkInboundRefs(ev, ctx) {
       query: {
         q: { [ref.fk]: item.id },
         pick: [ 'id' ],
-        limit: 500
+        limit: 500,
+        consistent: true
       }
     });
 
