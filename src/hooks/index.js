@@ -4,7 +4,7 @@ const checkOutboundRefs = require('./outbound_refs');
 const checkInboundRefs = require('./inbound_refs');
 const authorizeAction = require('./authorize_action');
 
-const actions = [ 'create', 'read', 'update', 'delete', 'list', 'patch' ];
+const actions = [ 'create', 'read', 'update', 'delete', 'list', 'patch', 'export' ];
 const stages =  [ 'auth', 'load', 'validate', 'save', 'response' ];
 
 class HookRegistry {
